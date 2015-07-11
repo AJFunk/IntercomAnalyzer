@@ -11,12 +11,20 @@ table
     td {{cohortTag.name}}
     td {{cohortTag.total_count}}
 
-  tr
-    td
-      h3 Stages
+table
+  thead
+    tr
+      th Stage
+      th Current #
+      th Overall #
+      th Stage Conversion Rate
+      th Overall Conversion Rate
   tr(ng-repeat='stageTag in stageTags')
     td {{stageTag.name}}
     td {{stageTag.total_count}}
+    td {{stageTag.overall_count}}
+    td(ng-if="stageTag.stageConversionRate") {{stageTag.stageConversionRate}}%
+    td(ng-if="stageTag.overallConversionRate") {{stageTag.overallConversionRate}}%
 
   tr
     td

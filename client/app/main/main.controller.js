@@ -28,7 +28,7 @@ angular.module('intercomDashboardApp')
             //buildBars();
             sortCohortTags();
             sortStageTags();
-            totalStageTags();
+
           }
         });
 
@@ -64,7 +64,7 @@ angular.module('intercomDashboardApp')
           }
 
         }
-        console.log(temp);
+        //console.log(temp);
         //sort by months
         for(var n in months) {
           for (var t = 0; t < temp.length; t++) {
@@ -104,7 +104,7 @@ angular.module('intercomDashboardApp')
         }
       }
       $scope.stageTags = temp;
-      console.log(temp);
+      totalStageTags();
     }
 
     function totalStageTags(){
@@ -112,8 +112,19 @@ angular.module('intercomDashboardApp')
       //$scope.totaledStageTags = $scope.stageTags;
       for (var i = $scope.totaledStageTags.length - 1; i >= 1; i--) {
         $scope.totaledStageTags[i-1].total_count = $scope.totaledStageTags[i-1].total_count + $scope.totaledStageTags[i].total_count;
+        $scope.stageTags[i].overall_count = $scope.totaledStageTags[i].total_count;
       }
-      console.log('totaled',$scope.totaledStageTags);
+      $scope.stageTags[0].overall_count = $scope.totaledStageTags[0].total_count;
+      //console.log('totaled',$scope.totaledStageTags);
+      calcConversionRates();
+    }
+
+    function calcConversionRates(){
+      for(var i = 1; i < $scope.stageTags.length; i++) {
+        $scope.stageTags[i].stageConversionRate = ($scope.stageTags[i].overall_count / $scope.stageTags[i-1].overall_count).toFixed(4) * 100;
+        $scope.stageTags[i].overallConversionRate = ($scope.stageTags[i].overall_count / $scope.stageTags[0].overall_count).toFixed(4) * 100;
+        //console.log($scope.stageTags[i].stageConversionRate);
+      }
     }
 
     // function buildBars(){
