@@ -18,6 +18,13 @@ table
     td {{stageTag.name}}
     td {{stageTag.total_count}}
 
+  tr
+    td
+      h3 Stages
+  tr(ng-repeat='stageTag in totaledStageTags')
+    td {{stageTag.name}}
+    td {{stageTag.total_count}}
+
 h3 All Tags
 table.table-striped
   tr(ng-repeat='tag in tags')

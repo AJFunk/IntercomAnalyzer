@@ -108,9 +108,9 @@ angular.module('intercomDashboardApp')
     }
 
     function totalStageTags(){
-      $scope.totaledStageTags = $scope.stageTags;
+      angular.copy($scope.stageTags, $scope.totaledStageTags);
+      //$scope.totaledStageTags = $scope.stageTags;
       for (var i = $scope.totaledStageTags.length - 1; i >= 1; i--) {
-        console.log($scope.totaledStageTags[i].name);
         $scope.totaledStageTags[i-1].total_count = $scope.totaledStageTags[i-1].total_count + $scope.totaledStageTags[i].total_count;
       }
       console.log('totaled',$scope.totaledStageTags);
