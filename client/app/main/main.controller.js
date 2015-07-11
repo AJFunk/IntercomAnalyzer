@@ -4,12 +4,12 @@ angular.module('intercomDashboardApp')
   .controller('MainCtrl', function ($scope, $http, User) {
 
     $scope.stageTags = [];
+    $scope.totaledStageTags = [];
     $scope.cohortTags = [];
     $scope.tagsFetched = 0;
 
     $http.get('/api/intercom')
     .success(function(intercom) {
-      console.log(intercom);
       $scope.tags = intercom.tags.tags;
       $scope.totalUsers = intercom.users.total_count;
       getTags();
@@ -26,6 +26,9 @@ angular.module('intercomDashboardApp')
           $scope.tagsFetched++;
           if($scope.tagsFetched == $scope.tags.length){
             //buildBars();
+            sortCohortTags();
+            sortStageTags();
+            totalStageTags();
           }
         });
 
@@ -35,10 +38,10 @@ angular.module('intercomDashboardApp')
           $scope.cohortTags.push($scope.tags[i]);
         }
       };
-      sortTags();
+
     }
 
-    function sortTags(){
+    function sortCohortTags(){
       var months = ['january','february','march','april','may','june','july','august','september','october','november','december'];
       var years = [];
       var temp = [];
@@ -73,6 +76,44 @@ angular.module('intercomDashboardApp')
 
       }
       $scope.cohortTags = result;
+    }
+
+
+    function sortStageTags(){
+      var temp = [];
+      var stages = [
+        'stage-app-request',
+        'stage-app-submitted',
+        'stage-interview-request-1',
+        'stage-interview-request-2',
+        'stage-accepted',
+        'stage-deposit-in',
+        'stage-background-check-sent',
+        'stage-background-check-done',
+        'stage-paperwork-sent',
+        'stage-enrolled'
+      ];
+
+      for(var i in stages) {
+        for (var m = 0; m < $scope.stageTags.length; m++) {
+          if($scope.stageTags[m].name == stages[i]) {
+            temp.push($scope.stageTags[m]);
+          }
+          //console.log($scope.stageTags)
+
+        }
+      }
+      $scope.stageTags = temp;
+      console.log(temp);
+    }
+
+    function totalStageTags(){
+      $scope.totaledStageTags = $scope.stageTags;
+      for (var i = $scope.totaledStageTags.length - 1; i >= 1; i--) {
+        console.log($scope.totaledStageTags[i].name);
+        $scope.totaledStageTags[i-1].total_count = $scope.totaledStageTags[i-1].total_count + $scope.totaledStageTags[i].total_count;
+      }
+      console.log('totaled',$scope.totaledStageTags);
     }
 
     // function buildBars(){
