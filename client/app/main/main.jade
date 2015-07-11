@@ -1,6 +1,25 @@
 div(ng-include='"components/navbar/navbar.html"')
 
-h1 Homepage
 h2 Total Users: {{totalUsers}}
-div(ng-repeat='tag in stageTags')
-  {{tag}}
+
+
+table
+  tr
+    td
+      h3 Cohorts
+  tr(ng-repeat='cohortTag in cohortTags')
+    td {{cohortTag.name}}
+    td {{cohortTag.total_count}}
+
+  tr
+    td
+      h3 Stages
+  tr(ng-repeat='stageTag in stageTags')
+    td {{stageTag.name}}
+    td {{stageTag.total_count}}
+
+h3 All Tags
+table.table-striped
+  tr(ng-repeat='tag in tags')
+    td {{tag.name}}
+    td {{tag.total_count}}
