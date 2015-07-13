@@ -121,8 +121,8 @@ angular.module('intercomDashboardApp')
 
     function calcConversionRates(){
       for(var i = 1; i < $scope.stageTags.length; i++) {
-        $scope.stageTags[i].stageConversionRate = ($scope.stageTags[i].overall_count / $scope.stageTags[i-1].overall_count).toFixed(4) * 100;
-        $scope.stageTags[i].overallConversionRate = ($scope.stageTags[i].overall_count / $scope.stageTags[0].overall_count).toFixed(4) * 100;
+        $scope.stageTags[i].stageConversionRate = ( ($scope.stageTags[i].overall_count / $scope.stageTags[i-1].overall_count) * 100).toFixed(2);
+        $scope.stageTags[i].overallConversionRate = ( ($scope.stageTags[i].overall_count / $scope.stageTags[0].overall_count) * 100).toFixed(2);
         //console.log($scope.stageTags[i].stageConversionRate);
       }
     }
