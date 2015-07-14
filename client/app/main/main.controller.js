@@ -10,14 +10,15 @@ angular.module('intercomDashboardApp')
     $scope.tagsFetched = 0;
     $scope.loading = false;
     $scope.apiCalls = 0;
+    $scope.dataFound = false;
 
     $http.get('/api/intercom/stats')
     .success(function(intercom) {
-      console.log(intercom[0]);
       var data = intercom[0].alldata;
       $scope.last_updated = intercom[0].last_updated;
       $scope.stageTags = data.stageTags;
       $scope.cohortTags = data.cohortTags;
+      $scope.dataFound = true;
     });
 
 
@@ -218,14 +219,20 @@ angular.module('intercomDashboardApp')
         alldata: {
           stageTags: $scope.stageTags,
           cohortTags: $scope.cohortTags
-        },
-        last_updated: new Date().toISOString()
+        }
       };
-      $http.put('/api/intercom', stats)
-      .success(function(res){
-        console.log('UPDATE COMPLETE', res);
-        $scope.last_updated = res[0].last_updated;
-      });
+      if($scope.dataFound) {
+        stats.last_updated = new Date().toISOString();
+        $http.put('/api/intercom', stats)
+        .success(function(res){
+          $scope.last_updated = res[0].last_updated;
+        });
+      } else {
+        $http.post('/api/intercom', stats)
+        .success(function(res){
+          console.log('data saved');
+        });
+      }
     }
 
 
