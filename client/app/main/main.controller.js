@@ -22,6 +22,10 @@ angular.module('intercomDashboardApp')
 
 
     $scope.fetchData = function() {
+      $scope.stageTags = [];
+      $scope.cohortTags = [];
+      $scope.acceptedUsers = [];
+      $scope.enrolledUsers = [];
       $scope.loading = true;
       $http.get('/api/intercom')
       .success(function(intercom) {
@@ -214,11 +218,13 @@ angular.module('intercomDashboardApp')
         alldata: {
           stageTags: $scope.stageTags,
           cohortTags: $scope.cohortTags
-        }
+        },
+        last_updated: new Date().toISOString()
       };
-      $http.post('/api/intercom', stats)
+      $http.put('/api/intercom', stats)
       .success(function(res){
-        console.log(res);
+        console.log('UPDATE COMPLETE', res);
+        $scope.last_updated = res[0].last_updated;
       });
     }
 
