@@ -15,7 +15,7 @@ angular.module('intercomDashboardApp')
       $scope.tags = intercom.tags.tags;
       $scope.totalUsers = intercom.users.total_count;
       $scope.segments = intercom.segments.segments;
-      console.log($scope.segments);
+      console.log('SEGMENTS', $scope.segments);
       getTags();
     })
     .catch(function(err){
@@ -29,7 +29,6 @@ angular.module('intercomDashboardApp')
           $scope.tags[response.index].total_count = response.total_count;
           $scope.tagsFetched++;
           if($scope.tagsFetched == $scope.tags.length){
-            //buildBars();
             sortCohortTags();
             sortStageTags();
 
@@ -39,6 +38,8 @@ angular.module('intercomDashboardApp')
         if($scope.tags[i].name.indexOf('stage-') > -1 ) {
           $scope.stageTags.push($scope.tags[i]);
         } else if($scope.tags[i].name.indexOf('cohort-') > -1 ) {
+          $scope.tags[i].acceptedCount = 0;
+          $scope.tags[i].enrolledCount = 0;
           $scope.cohortTags.push($scope.tags[i]);
         }
       };
@@ -166,55 +167,30 @@ angular.module('intercomDashboardApp')
     };
 
     function countAcceptedEnrolled(){
-      console.log('done');
+      for(var i in $scope.cohortTags){
+        for(var m in $scope.acceptedUsers) {
+          for(var n in $scope.acceptedUsers[m].tags.tags) {
+            if($scope.acceptedUsers[m].tags.tags[n].name === $scope.cohortTags[i].name) {
+              //console.log($scope.acceptedUsers[m].name, " is in ", $scope.cohortTags[i].name);
+              $scope.cohortTags[i].acceptedCount++;
+            }
+          }
+        }
+      }
+
+      for(var i in $scope.cohortTags){
+        for(var m in $scope.enrolledUsers) {
+          for(var n in $scope.enrolledUsers[m].tags.tags) {
+            if($scope.enrolledUsers[m].tags.tags[n].name === $scope.cohortTags[i].name) {
+              //console.log($scope.acceptedUsers[m].name, " is in ", $scope.cohortTags[i].name);
+              $scope.cohortTags[i].enrolledCount++;
+            }
+          }
+        }
+      }
+      console.log($scope.cohortTags);
     }
 
-    // function buildBars(){
-    //   var barData = [];
-    //   for (var i = 0; i < $scope.tags.length; i++) {
-    //     barData.push($scope.tags[i].total_count);
-    //   };
-    //   console.log('finished!', barData);
-    //   //  the size of the overall svg element
-    //   var height = 200,
-    //     width = 720,
-    //     barWidth = 40,
-    //     barOffset = 20;
-
-
-    //   var svg = d3.select('#barChart').append('svg')
-    //     .attr('width', width)
-    //     .attr('height', height)
-    //     .style('background', '#dff0d8')
-    //     .selectAll('rect').data(barData)
-    //     .enter().append('rect')
-    //       .style({'fill': '#3c763d', 'stroke': '#d6e9c6', 'stroke-width': '5'})
-    //       .attr('width', barWidth)
-    //       .attr('height', function (data) {
-    //           return data;
-    //       })
-    //       .attr('x', function (data, i) {
-    //           return i * (barWidth + barOffset);
-    //       })
-    //       .attr('y', function (data) {
-    //           return height - data;
-    //       });
-
-    //     svg.selectAll("text")
-    //       .data(barData)
-    //       .enter()
-    //       .append("text")
-    //       .text(function(d) {
-    //             return d;
-    //        })
-    //       .attr("x", function(d, i) {
-    //             return i * (barWidth / barData.length);
-    //        })
-    //        .attr("y", function(d) {
-    //             return height - (d * 4);
-    //        });
-    //        console.log('finished labels');
-    // } //end buildBars function
 
 
   });

@@ -5,11 +5,15 @@ h2 Total Users: {{totalUsers}}
 
 table
   tr
-    td
-      h3 Cohorts
+    th Cohort
+    th Total
+    th Accepted
+    th Enrolled
   tr(ng-repeat='cohortTag in cohortTags')
     td {{cohortTag.display_name}}
     td {{cohortTag.total_count}}
+    td {{cohortTag.acceptedCount}}
+    td {{cohortTag.enrolledCount}}
 
 table
   thead
