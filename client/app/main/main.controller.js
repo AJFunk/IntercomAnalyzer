@@ -6,12 +6,16 @@ angular.module('intercomDashboardApp')
     $scope.stageTags = [];
     $scope.totaledStageTags = [];
     $scope.cohortTags = [];
+    $scope.acceptedUsers = [];
+    $scope.enrolledUsers = [];
     $scope.tagsFetched = 0;
 
     $http.get('/api/intercom')
     .success(function(intercom) {
       $scope.tags = intercom.tags.tags;
       $scope.totalUsers = intercom.users.total_count;
+      $scope.segments = intercom.segments.segments;
+      console.log($scope.segments);
       getTags();
     })
     .catch(function(err){
@@ -76,6 +80,11 @@ angular.module('intercomDashboardApp')
 
       }
       $scope.cohortTags = result;
+
+      for(var i in $scope.cohortTags) {
+        var x = $scope.cohortTags[i].name.replace('cohort-', '').replace('-', ' ');
+        $scope.cohortTags[i].display_name = x.charAt(0).toUpperCase() + x.slice(1);
+      }
     }
 
 
@@ -125,6 +134,39 @@ angular.module('intercomDashboardApp')
         $scope.stageTags[i].overallConversionRate = ( ($scope.stageTags[i].overall_count / $scope.stageTags[0].overall_count) * 100).toFixed(2);
         //console.log($scope.stageTags[i].stageConversionRate);
       }
+      getAccepted(1);
+    }
+
+    function getAccepted(page){
+      var acceptedId = '96456';
+      $http.get('/api/intercom/tagPage/' + acceptedId + '/' + page)
+      .success(function(response){
+        //console.log(response.users);
+        $scope.acceptedUsers = $scope.acceptedUsers.concat(response.users);
+        if(response.pages.total_pages > response.pages.page) {
+          getAccepted(response.pages.page+1);
+        } else {
+          getEnrolled(1);
+        }
+      });
+    };
+
+    function getEnrolled(page){
+      var enrolledId = '122470';
+      $http.get('/api/intercom/tagPage/' + enrolledId + '/' + page)
+      .success(function(response){
+        //console.log(response.users);
+        $scope.enrolledUsers = $scope.enrolledUsers.concat(response.users);
+        if(response.pages.total_pages > response.pages.page) {
+          getEnrolled(response.pages.page+1);
+        } else {
+          countAcceptedEnrolled();
+        }
+      });
+    };
+
+    function countAcceptedEnrolled(){
+      console.log('done');
     }
 
     // function buildBars(){

@@ -7,6 +7,8 @@ var router = express.Router();
 
 router.get('/', controller.index);
 router.get('/tagNum/:id/:index', controller.tagNum);
+router.get('/tagPage/:id/:page', controller.tagPage);
+//router.get('/segments', controller.segments)
 // router.get('/:id', controller.show);
 // router.post('/', controller.create);
 // router.put('/:id', controller.update);

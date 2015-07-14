@@ -31,14 +31,16 @@ exports.index = function(req, res) {
     // tag_id: 7002,
     // tag_name: "me"
   }, function (err, users) {
-    intercom.getTag({
-    }, function (err, tags) {
+    intercom.getTag({}, function (err, tags) {
       //console.log(tags);
-      var data = {
-        tags: tags,
-        users: users
-      };
-      return res.send(200, data);
+      intercom.listSegments({}, function (err, segments) {
+        var data = {
+          tags: tags,
+          users: users,
+          segments: segments
+        };
+        return res.send(200, data);
+      });
     });
 
     // console.log(res);
@@ -49,29 +51,16 @@ exports.index = function(req, res) {
 exports.tagNum = function(req, res) {
   console.log(req.params.index);
   intercom.getUser({ "tag_id": req.params.id }).then(function(data) {
-    //console.log(res);
     data.index = req.params.index;
     return res.send(200, data);
-    // res is **JSON** response
-    // In this case:
-    // {
-    //   "intercom_id": "52322b396823b17b1100016a",
-    //   "email": "ben@intercom.io",
-    //   "user_id": "7902",
-    //   "name": "Ben McRedmond",
-    //   "created_at": 1257553080,
-    //   "last_impression_at": 1300000000,
-    //   "custom_data": {
-    //     "plan": "pro"
-    //   },
-    // ...
-    // ...
-    // ...
-    //   "session_count": 0,
-    //   "last_seen_ip": "1.2.3.4",
-    //   "last_seen_user_agent": "ie6",
-    //   "unsubscribed_from_emails": false
-    // }
+  }, function(err) {
+    return res.send(500);
+  });
+};
+
+exports.tagPage = function(req, res) {
+  intercom.getUser({ "tag_id": req.params.id, "page": req.params.page }).then(function(data) {
+    return res.send(200, data);
   }, function(err) {
     return res.send(500);
   });
