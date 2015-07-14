@@ -4,11 +4,11 @@ angular.module('intercomDashboardApp')
   .controller('MainCtrl', function ($scope, $http, User) {
 
     $scope.stageTags = [];
-    $scope.totaledStageTags = [];
     $scope.cohortTags = [];
     $scope.acceptedUsers = [];
     $scope.enrolledUsers = [];
     $scope.tagsFetched = 0;
+    $scope.loading = true;
 
     $http.get('/api/intercom')
     .success(function(intercom) {
@@ -118,14 +118,12 @@ angular.module('intercomDashboardApp')
     }
 
     function totalStageTags(){
-      angular.copy($scope.stageTags, $scope.totaledStageTags);
-      //$scope.totaledStageTags = $scope.stageTags;
-      for (var i = $scope.totaledStageTags.length - 1; i >= 1; i--) {
-        $scope.totaledStageTags[i-1].total_count = $scope.totaledStageTags[i-1].total_count + $scope.totaledStageTags[i].total_count;
-        $scope.stageTags[i].overall_count = $scope.totaledStageTags[i].total_count;
+      var x = $scope.stageTags;
+      for (var i = x.length - 1; i >= 1; i--) {
+        x[i-1].total_count = x[i-1].total_count + x[i].total_count;
+        $scope.stageTags[i].overall_count = x[i].total_count;
       }
-      $scope.stageTags[0].overall_count = $scope.totaledStageTags[0].total_count;
-      //console.log('totaled',$scope.totaledStageTags);
+      $scope.stageTags[0].overall_count = x[0].total_count;
       calcConversionRates();
     }
 
@@ -189,6 +187,11 @@ angular.module('intercomDashboardApp')
         }
       }
       console.log($scope.cohortTags);
+      finished();
+    }
+
+    function finished(){
+      $scope.loading = false;
     }
 
 
