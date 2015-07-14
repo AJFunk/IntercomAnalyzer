@@ -10,7 +10,7 @@
 'use strict';
 
 var _ = require('lodash');
-//var Thing = require('./thing.model');
+var Stats = require('./intercom.model');
 var Intercom = require('intercom.io');
 
 var options = {
@@ -66,36 +66,34 @@ exports.tagPage = function(req, res) {
   });
 };
 
-// Get a single thing
-// exports.show = function(req, res) {
-//   Thing.findById(req.params.id, function (err, thing) {
-//     if(err) { return handleError(res, err); }
-//     if(!thing) { return res.send(404); }
-//     return res.json(thing);
-//   });
-// };
+exports.show = function(req, res) {
+  Stats.find({}, function (err, stats) {
+    if(err) { return handleError(res, err); }
+    if(!stats) { return res.send(404); }
+    return res.json(stats);
+  });
+};
 
-// // Creates a new thing in the DB.
-// exports.create = function(req, res) {
-//   Thing.create(req.body, function(err, thing) {
-//     if(err) { return handleError(res, err); }
-//     return res.json(201, thing);
-//   });
-// };
+exports.create = function(req, res) {
+  console.log(req.body);
+  Stats.create(req.body, function(err, stats) {
+    if(err) { return handleError(res, err); }
+    return res.json(201, stats);
+  });
+};
 
-// // Updates an existing thing in the DB.
-// exports.update = function(req, res) {
-//   if(req.body._id) { delete req.body._id; }
-//   Thing.findById(req.params.id, function (err, thing) {
-//     if (err) { return handleError(res, err); }
-//     if(!thing) { return res.send(404); }
-//     var updated = _.merge(thing, req.body);
-//     updated.save(function (err) {
-//       if (err) { return handleError(res, err); }
-//       return res.json(200, thing);
-//     });
-//   });
-// };
+exports.update = function(req, res) {
+  if(req.body._id) { delete req.body._id; }
+  Stats.find({}, function (err, stats) {
+    if (err) { return handleError(res, err); }
+    if(!stats) { return res.send(404); }
+    var updated = _.merge(stats, req.body);
+    updated.save(function (err) {
+      if (err) { return handleError(res, err); }
+      return res.json(200, stats);
+    });
+  });
+};
 
 // // Deletes a thing from the DB.
 // exports.destroy = function(req, res) {

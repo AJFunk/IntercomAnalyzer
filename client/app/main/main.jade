@@ -5,7 +5,11 @@ div(ng-include='"components/navbar/navbar.html"')
   img(src='assets/images/loading.gif')
   h2 Analyzing Data...
 
+h4 Last updated {{last_updated | date:'MM-dd-yyyy HH:mm:ss Z'}}
+.btn.btn-primary(ng-click="fetchData()") Fetch New Data
+
 h2 Total Users: {{totalUsers}}
+h3 API Calls: {{apiCalls}}
 
 table
   tr

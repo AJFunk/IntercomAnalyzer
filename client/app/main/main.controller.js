@@ -8,24 +8,40 @@ angular.module('intercomDashboardApp')
     $scope.acceptedUsers = [];
     $scope.enrolledUsers = [];
     $scope.tagsFetched = 0;
-    $scope.loading = true;
+    $scope.loading = false;
+    $scope.apiCalls = 0;
 
-    $http.get('/api/intercom')
+    $http.get('/api/intercom/stats')
     .success(function(intercom) {
-      $scope.tags = intercom.tags.tags;
-      $scope.totalUsers = intercom.users.total_count;
-      $scope.segments = intercom.segments.segments;
-      console.log('SEGMENTS', $scope.segments);
-      getTags();
-    })
-    .catch(function(err){
-      console.log(err);
+      console.log(intercom[0]);
+      var data = intercom[0].alldata;
+      $scope.last_updated = intercom[0].last_updated;
+      $scope.stageTags = data.stageTags;
+      $scope.cohortTags = data.cohortTags;
     });
+
+
+    $scope.fetchData = function() {
+      $scope.loading = true;
+      $http.get('/api/intercom')
+      .success(function(intercom) {
+        $scope.tags = intercom.tags.tags;
+        $scope.totalUsers = intercom.users.total_count;
+        $scope.segments = intercom.segments.segments;
+        console.log('SEGMENTS', $scope.segments);
+        $scope.apiCalls++;
+        getTags();
+      })
+      .catch(function(err){
+        console.log(err);
+      });
+    }
 
     function getTags(){
       for (var i = 0; i < $scope.tags.length; i++) {
         $http.get('/api/intercom/tagNum/' + $scope.tags[i].id + '/' + i)
         .success(function(response){
+          $scope.apiCalls++;
           $scope.tags[response.index].total_count = response.total_count;
           $scope.tagsFetched++;
           if($scope.tagsFetched == $scope.tags.length){
@@ -118,7 +134,7 @@ angular.module('intercomDashboardApp')
     }
 
     function totalStageTags(){
-      var x = $scope.stageTags;
+      var x = angular.copy($scope.stageTags);
       for (var i = x.length - 1; i >= 1; i--) {
         x[i-1].total_count = x[i-1].total_count + x[i].total_count;
         $scope.stageTags[i].overall_count = x[i].total_count;
@@ -140,6 +156,7 @@ angular.module('intercomDashboardApp')
       var acceptedId = '96456';
       $http.get('/api/intercom/tagPage/' + acceptedId + '/' + page)
       .success(function(response){
+        $scope.apiCalls++;
         //console.log(response.users);
         $scope.acceptedUsers = $scope.acceptedUsers.concat(response.users);
         if(response.pages.total_pages > response.pages.page) {
@@ -154,6 +171,7 @@ angular.module('intercomDashboardApp')
       var enrolledId = '122470';
       $http.get('/api/intercom/tagPage/' + enrolledId + '/' + page)
       .success(function(response){
+        $scope.apiCalls++;
         //console.log(response.users);
         $scope.enrolledUsers = $scope.enrolledUsers.concat(response.users);
         if(response.pages.total_pages > response.pages.page) {
@@ -192,6 +210,16 @@ angular.module('intercomDashboardApp')
 
     function finished(){
       $scope.loading = false;
+      var stats = {
+        alldata: {
+          stageTags: $scope.stageTags,
+          cohortTags: $scope.cohortTags
+        }
+      };
+      $http.post('/api/intercom', stats)
+      .success(function(res){
+        console.log(res);
+      });
     }
 
 
