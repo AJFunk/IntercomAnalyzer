@@ -6,6 +6,7 @@ var controller = require('./intercom.controller');
 var router = express.Router();
 
 router.get('/', controller.index);
+router.get('/users/:index', controller.users);
 router.get('/stats', controller.show);
 router.get('/tagNum/:id/:index', controller.tagNum);
 router.get('/tagPage/:id/:page', controller.tagPage);

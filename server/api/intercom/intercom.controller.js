@@ -48,6 +48,24 @@ exports.index = function(req, res) {
   });
 };
 
+exports.users = function(req, res) {
+  // Thing.find(function (err, things) {
+  //   if(err) { return handleError(res, err); }
+  //   return res.json(200, things);
+  // });
+  intercom.getUsers({
+    page: req.params.index
+    // per_page: 500,
+    // tag_id: 7002,
+    // tag_name: "me"
+  }, function (err, users) {
+    console.log(users);
+    users.index = req.params.index;
+    if(err) { return res.send(500); }
+    return res.send(200, users);
+  });
+};
+
 exports.tagNum = function(req, res) {
   console.log(req.params.index);
   intercom.getUser({ "tag_id": req.params.id }).then(function(data) {

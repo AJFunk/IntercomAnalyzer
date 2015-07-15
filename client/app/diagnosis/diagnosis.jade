@@ -1,0 +1,13 @@
+div(ng-include='"components/navbar/navbar.html"')
+
+table
+  h3 Users with Multiple Stage Tags:
+  tr(ng-repeat='x in multiStage')
+    td {{x.name}}
+    td {{x.email}}
+
+table
+  h3 Users with Missing Stage Tag:
+  tr(ng-repeat='x in noStage')
+    td {{x.name}}
+    td {{x.email}}
