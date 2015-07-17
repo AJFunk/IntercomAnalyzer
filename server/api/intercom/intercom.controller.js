@@ -33,14 +33,19 @@ exports.index = function(req, res) {
   }, function (err, users) {
     intercom.getTag({}, function (err, tags) {
       //console.log(tags);
-      intercom.listSegments({}, function (err, segments) {
-        var data = {
-          tags: tags,
-          users: users,
-          segments: segments
-        };
-        return res.send(200, data);
-      });
+      // intercom.listSegments({}, function (err, segments) {
+      //   var data = {
+      //     tags: tags,
+      //     users: users,
+      //     segments: segments
+      //   };
+      //   return res.send(200, data);
+      // });
+      var data = {
+        tags: tags,
+        users: users
+      };
+      return res.send(200, data);
     });
 
     // console.log(res);

@@ -7,6 +7,8 @@ angular.module('intercomDashboardApp')
     $scope.cohortTags = [];
     $scope.acceptedUsers = [];
     $scope.enrolledUsers = [];
+    $scope.graduatedUsers = [];
+    $scope.jobUsers = [];
     $scope.tagsFetched = 0;
     $scope.loading = false;
     $scope.apiCalls = 0;
@@ -32,8 +34,6 @@ angular.module('intercomDashboardApp')
       .success(function(intercom) {
         $scope.tags = intercom.tags.tags;
         $scope.totalUsers = intercom.users.total_count;
-        $scope.segments = intercom.segments.segments;
-        console.log('SEGMENTS', $scope.segments);
         $scope.apiCalls++;
         getTags();
       })
@@ -61,6 +61,8 @@ angular.module('intercomDashboardApp')
         } else if($scope.tags[i].name.indexOf('cohort-') > -1 ) {
           $scope.tags[i].acceptedCount = 0;
           $scope.tags[i].enrolledCount = 0;
+          $scope.tags[i].graduatedCount = 0;
+          $scope.tags[i].jobCount = 0;
           $scope.cohortTags.push($scope.tags[i]);
         }
       };
@@ -116,13 +118,16 @@ angular.module('intercomDashboardApp')
         'stage-app-request',
         'stage-app-submitted',
         'stage-interview-request-1',
+        'stage-1st-IR-scheduled',
         'stage-interview-request-2',
         'stage-accepted',
         'stage-deposit-in',
         'stage-background-check-sent',
         'stage-background-check-done',
         'stage-paperwork-sent',
-        'stage-enrolled'
+        'stage-enrolled',
+        'stage-graduated',
+        'stage-job'
       ];
 
       for(var i in stages) {
@@ -182,33 +187,77 @@ angular.module('intercomDashboardApp')
         if(response.pages.total_pages > response.pages.page) {
           getEnrolled(response.pages.page+1);
         } else {
-          countAcceptedEnrolled();
+          getGrads(1);
         }
       });
     };
 
-    function countAcceptedEnrolled(){
+    function getGrads(page){
+      var gradId = '124235';
+      $http.get('/api/intercom/tagPage/' + gradId + '/' + page)
+      .success(function(response){
+        $scope.apiCalls++;
+        //console.log(response.users);
+        $scope.graduatedUsers = $scope.graduatedUsers.concat(response.users);
+        if(response.pages.total_pages > response.pages.page) {
+          getEnrolled(response.pages.page+1);
+        } else {
+          getJobs(1);
+        }
+      });
+    };
+
+    function getJobs(page){
+      var jobId = '124233';
+      $http.get('/api/intercom/tagPage/' + jobId + '/' + page)
+      .success(function(response){
+        $scope.apiCalls++;
+        //console.log(response.users);
+        $scope.jobUsers = $scope.jobUsers.concat(response.users);
+        if(response.pages.total_pages > response.pages.page) {
+          getEnrolled(response.pages.page+1);
+        } else {
+          calcCohortStats();
+        }
+      });
+    };
+
+
+    function calcCohortStats(){
       for(var i in $scope.cohortTags){
         for(var m in $scope.acceptedUsers) {
           for(var n in $scope.acceptedUsers[m].tags.tags) {
             if($scope.acceptedUsers[m].tags.tags[n].name === $scope.cohortTags[i].name) {
-              //console.log($scope.acceptedUsers[m].name, " is in ", $scope.cohortTags[i].name);
               $scope.cohortTags[i].acceptedCount++;
+            }
+          }
+        }
+
+        for(var m in $scope.enrolledUsers) {
+          for(var n in $scope.enrolledUsers[m].tags.tags) {
+            if($scope.enrolledUsers[m].tags.tags[n].name === $scope.cohortTags[i].name) {
+              $scope.cohortTags[i].enrolledCount++;
+            }
+          }
+        }
+
+        for(var m in $scope.graduatedUsers) {
+          for(var n in $scope.graduatedUsers[m].tags.tags) {
+            if($scope.graduatedUsers[m].tags.tags[n].name === $scope.cohortTags[i].name) {
+              $scope.cohortTags[i].graduatedCount++;
+            }
+          }
+        }
+
+        for(var m in $scope.jobUsers) {
+          for(var n in $scope.jobUsers[m].tags.tags) {
+            if($scope.jobUsers[m].tags.tags[n].name === $scope.cohortTags[i].name) {
+              $scope.cohortTags[i].jobCount++;
             }
           }
         }
       }
 
-      for(var i in $scope.cohortTags){
-        for(var m in $scope.enrolledUsers) {
-          for(var n in $scope.enrolledUsers[m].tags.tags) {
-            if($scope.enrolledUsers[m].tags.tags[n].name === $scope.cohortTags[i].name) {
-              //console.log($scope.acceptedUsers[m].name, " is in ", $scope.cohortTags[i].name);
-              $scope.cohortTags[i].enrolledCount++;
-            }
-          }
-        }
-      }
       console.log($scope.cohortTags);
       finished();
     }

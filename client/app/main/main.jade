@@ -17,11 +17,15 @@ table
     th Total
     th Accepted
     th Enrolled
+    th Graduated
+    th Job
   tr(ng-repeat='cohortTag in cohortTags')
     td {{cohortTag.display_name}}
     td {{cohortTag.total_count}}
     td {{cohortTag.acceptedCount}}
     td {{cohortTag.enrolledCount}}
+    td {{cohortTag.graduatedCount}}
+    td {{cohortTag.jobCount}}
 
 br
 br
