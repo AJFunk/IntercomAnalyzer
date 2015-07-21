@@ -20,6 +20,7 @@ table
     th Enrolled
     th Graduated
     th Job
+    th Residents
   tr(ng-repeat='cohortTag in cohortTags')
     td {{cohortTag.display_name}}
     td {{cohortTag.total_count}}
@@ -28,6 +29,7 @@ table
     td {{cohortTag.enrolledCount}}
     td {{cohortTag.graduatedCount}}
     td {{cohortTag.jobCount}}
+    td {{cohortTag.residentCount}}
 
 br
 br

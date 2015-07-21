@@ -9,6 +9,7 @@ angular.module('intercomDashboardApp')
     $scope.acceptedUsers = [];
     $scope.enrolledUsers = [];
     $scope.graduatedUsers = [];
+    $scope.residents = [];
     $scope.jobUsers = [];
     $scope.tagsFetched = 0;
     $scope.loading = false;
@@ -55,12 +56,14 @@ angular.module('intercomDashboardApp')
           if($scope.tags[x].name.indexOf('stage-') > -1 ) {
             $scope.stageTags.push($scope.tags[x]);
           } else if($scope.tags[x].name.indexOf('cohort-') > -1 ) {
-            $scope.tags[x].acceptedCount = 0;
-            $scope.tags[x].enrolledCount = 0;
-            $scope.tags[x].graduatedCount = 0;
-            $scope.tags[x].jobCount = 0;
-            $scope.tags[x].appliedCount = 0;
-            $scope.tags[x].appReqCount = 0;
+            var tag = $scope.tags[x];
+            tag.acceptedCount = 0;
+            tag.enrolledCount = 0;
+            tag.graduatedCount = 0;
+            tag.jobCount = 0;
+            tag.appliedCount = 0;
+            tag.appReqCount = 0;
+            tag.residentCount = 0;
             $scope.cohortTags.push($scope.tags[x]);
           }
 
@@ -170,7 +173,6 @@ angular.module('intercomDashboardApp')
       $http.get('/api/intercom/tagPage/' + appReqId + '/' + page)
       .success(function(response){
         $scope.apiCalls++;
-        //console.log(response.users);
         $scope.appReqUsers = $scope.appReqUsers.concat(response.users);
         if(response.pages.total_pages > response.pages.page) {
           getAppReq(response.pages.page+1);
@@ -185,7 +187,6 @@ angular.module('intercomDashboardApp')
       $http.get('/api/intercom/tagPage/' + acceptedId + '/' + page)
       .success(function(response){
         $scope.apiCalls++;
-        //console.log(response.users);
         $scope.acceptedUsers = $scope.acceptedUsers.concat(response.users);
         if(response.pages.total_pages > response.pages.page) {
           getAccepted(response.pages.page+1);
@@ -200,7 +201,6 @@ angular.module('intercomDashboardApp')
       $http.get('/api/intercom/tagPage/' + enrolledId + '/' + page)
       .success(function(response){
         $scope.apiCalls++;
-        //console.log(response.users);
         $scope.enrolledUsers = $scope.enrolledUsers.concat(response.users);
         if(response.pages.total_pages > response.pages.page) {
           getEnrolled(response.pages.page+1);
@@ -215,7 +215,6 @@ angular.module('intercomDashboardApp')
       $http.get('/api/intercom/tagPage/' + gradId + '/' + page)
       .success(function(response){
         $scope.apiCalls++;
-        //console.log(response.users);
         $scope.graduatedUsers = $scope.graduatedUsers.concat(response.users);
         if(response.pages.total_pages > response.pages.page) {
           getEnrolled(response.pages.page+1);
@@ -230,16 +229,28 @@ angular.module('intercomDashboardApp')
       $http.get('/api/intercom/tagPage/' + jobId + '/' + page)
       .success(function(response){
         $scope.apiCalls++;
-        //console.log(response.users);
         $scope.jobUsers = $scope.jobUsers.concat(response.users);
         if(response.pages.total_pages > response.pages.page) {
           getEnrolled(response.pages.page+1);
+        } else {
+          getResidents(1);
+        }
+      });
+    };
+
+    function getResidents(page){
+      var residentId = '123549';
+      $http.get('/api/intercom/tagPage/' + residentId + '/' + page)
+      .success(function(response){
+        $scope.apiCalls++;
+        $scope.residents = $scope.residents.concat(response.users);
+        if(response.pages.total_pages > response.pages.page) {
+          getResidents(response.pages.page+1);
         } else {
           calcCohortStats();
         }
       });
     };
-
 
     function calcCohortStats(){
       for(var i in $scope.cohortTags){
@@ -281,6 +292,14 @@ angular.module('intercomDashboardApp')
           for(var n in $scope.jobUsers[m].tags.tags) {
             if($scope.jobUsers[m].tags.tags[n].name === $scope.cohortTags[i].name) {
               $scope.cohortTags[i].jobCount++;
+            }
+          }
+        }
+
+        for(var m in $scope.residents) {
+          for(var n in $scope.residents[m].tags.tags) {
+            if($scope.residents[m].tags.tags[n].name === $scope.cohortTags[i].name) {
+              $scope.cohortTags[i].residentCount++;
             }
           }
         }
