@@ -1,8 +1,22 @@
 div(ng-include='"components/navbar/navbar.html"')
 
+.loader(ng-if='loading')
+  h2 Analyzing Data...
+  img(src='assets/images/loading.gif')
+  h2 Analyzing Data...
+
+//-h4 Last updated {{last_updated | date:'MM-dd-yyyy HH:mm:ss Z'}}
+.btn.btn-primary(ng-click="diagnose()") Fetch New Data
+
 table
   h3 Users with Multiple Stage Tags:
   tr(ng-repeat='x in multiStage')
+    td {{x.name}}
+    td {{x.email}}
+
+table
+  h3 Users with Multiple Status Tags:
+  tr(ng-repeat='x in multiStatus')
     td {{x.name}}
     td {{x.email}}
 

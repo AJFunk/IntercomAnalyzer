@@ -6,7 +6,7 @@ div(ng-include='"components/navbar/navbar.html"')
   h2 Analyzing Data...
 
 h4 Last updated {{last_updated | date:'MM-dd-yyyy HH:mm:ss Z'}}
-.btn.btn-primary(ng-click="fetchData()") Fetch New Data
+.btn.btn-primary#fetch(ng-click="fetchData()") Fetch New Data
 
 h2 Total Users: {{totalUsers}}
 h3 API Calls: {{apiCalls}}
@@ -15,6 +15,7 @@ table
   tr
     th Cohort
     th Total
+    th Applied
     th Accepted
     th Enrolled
     th Graduated
@@ -22,6 +23,7 @@ table
   tr(ng-repeat='cohortTag in cohortTags')
     td {{cohortTag.display_name}}
     td {{cohortTag.total_count}}
+    td {{cohortTag.appliedCount}}
     td {{cohortTag.acceptedCount}}
     td {{cohortTag.enrolledCount}}
     td {{cohortTag.graduatedCount}}

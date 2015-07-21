@@ -5,6 +5,7 @@ angular.module('intercomDashboardApp')
 
     $scope.stageTags = [];
     $scope.cohortTags = [];
+    $scope.appReqUsers = [];
     $scope.acceptedUsers = [];
     $scope.enrolledUsers = [];
     $scope.graduatedUsers = [];
@@ -49,24 +50,27 @@ angular.module('intercomDashboardApp')
           $scope.apiCalls++;
           $scope.tags[response.index].total_count = response.total_count;
           $scope.tagsFetched++;
+
+          var x = response.index;
+          if($scope.tags[x].name.indexOf('stage-') > -1 ) {
+            $scope.stageTags.push($scope.tags[x]);
+          } else if($scope.tags[x].name.indexOf('cohort-') > -1 ) {
+            $scope.tags[x].acceptedCount = 0;
+            $scope.tags[x].enrolledCount = 0;
+            $scope.tags[x].graduatedCount = 0;
+            $scope.tags[x].jobCount = 0;
+            $scope.tags[x].appliedCount = 0;
+            $scope.tags[x].appReqCount = 0;
+            $scope.cohortTags.push($scope.tags[x]);
+          }
+
           if($scope.tagsFetched == $scope.tags.length){
             sortCohortTags();
             sortStageTags();
-
           }
+
         });
-
-        if($scope.tags[i].name.indexOf('stage-') > -1 ) {
-          $scope.stageTags.push($scope.tags[i]);
-        } else if($scope.tags[i].name.indexOf('cohort-') > -1 ) {
-          $scope.tags[i].acceptedCount = 0;
-          $scope.tags[i].enrolledCount = 0;
-          $scope.tags[i].graduatedCount = 0;
-          $scope.tags[i].jobCount = 0;
-          $scope.cohortTags.push($scope.tags[i]);
-        }
-      };
-
+      }
     }
 
     function sortCohortTags(){
@@ -157,10 +161,24 @@ angular.module('intercomDashboardApp')
       for(var i = 1; i < $scope.stageTags.length; i++) {
         $scope.stageTags[i].stageConversionRate = ( ($scope.stageTags[i].overall_count / $scope.stageTags[i-1].overall_count) * 100).toFixed(2);
         $scope.stageTags[i].overallConversionRate = ( ($scope.stageTags[i].overall_count / $scope.stageTags[0].overall_count) * 100).toFixed(2);
-        //console.log($scope.stageTags[i].stageConversionRate);
       }
-      getAccepted(1);
+      getAppReq(1);
     }
+
+    function getAppReq(page){
+      var appReqId = '88670';
+      $http.get('/api/intercom/tagPage/' + appReqId + '/' + page)
+      .success(function(response){
+        $scope.apiCalls++;
+        //console.log(response.users);
+        $scope.appReqUsers = $scope.appReqUsers.concat(response.users);
+        if(response.pages.total_pages > response.pages.page) {
+          getAppReq(response.pages.page+1);
+        } else {
+          getAccepted(1);
+        }
+      });
+    };
 
     function getAccepted(page){
       var acceptedId = '96456';
@@ -225,6 +243,16 @@ angular.module('intercomDashboardApp')
 
     function calcCohortStats(){
       for(var i in $scope.cohortTags){
+
+        for(var m in $scope.appReqUsers) {
+          for(var n in $scope.appReqUsers[m].tags.tags) {
+            if($scope.appReqUsers[m].tags.tags[n].name === $scope.cohortTags[i].name) {
+              $scope.cohortTags[i].appReqCount++;
+            }
+          }
+        }
+        $scope.cohortTags[i].appliedCount = $scope.cohortTags[i].total_count - $scope.cohortTags[i].appReqCount;
+
         for(var m in $scope.acceptedUsers) {
           for(var n in $scope.acceptedUsers[m].tags.tags) {
             if($scope.acceptedUsers[m].tags.tags[n].name === $scope.cohortTags[i].name) {
@@ -264,6 +292,8 @@ angular.module('intercomDashboardApp')
 
     function finished(){
       $scope.loading = false;
+      $('#fetch').hide();
+      console.log('COHORTS', $scope.cohortTags);
       var stats = {
         alldata: {
           stageTags: $scope.stageTags,
@@ -279,6 +309,7 @@ angular.module('intercomDashboardApp')
       } else {
         $http.post('/api/intercom', stats)
         .success(function(res){
+          $scope.dataFound = true;
           console.log('data saved');
         });
       }

@@ -3,11 +3,15 @@
 angular.module('intercomDashboardApp')
   .controller('DiagnosisCtrl', function ($scope, $http) {
 
-    getUsers(1);
-
     $scope.users = [];
     $scope.noStage = [];
     $scope.multiStage = [];
+    $scope.multiStatus = [];
+
+    $scope.diagnose = function() {
+      $scope.loading = true;
+      getUsers(1);
+    };
 
     function getUsers(i) {
       $http.get('/api/intercom/users/' + i)
@@ -40,8 +44,27 @@ angular.module('intercomDashboardApp')
           $scope.noStage.push($scope.users[i]);
         }
       }
-      console.log('No Stage', $scope.noStage);
-      console.log('Multi', $scope.multiStage);
+      findStatusErrors();
+
     }
+
+    function findStatusErrors() {
+      //find multi status tags
+      for(var i in $scope.users) {
+        var statusFound = false;
+        for(var m in $scope.users[i].tags.tags) {
+          var name = $scope.users[i].tags.tags[m].name;
+          if(name == 'Accepted' || name == 'Enrolled' || name == 'Graduated' || name == 'Job'){
+            if(statusFound) {
+              $scope.multiStatus.push($scope.users[i]);
+            } else {
+              statusFound = true;
+            }
+          }
+        }
+      }
+      console.log($scope.multiStatus);
+      $scope.loading = false;
+    };
 
   });
