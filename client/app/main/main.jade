@@ -1,56 +1,58 @@
 div(ng-include='"components/navbar/navbar.html"')
 
-.loader(ng-if='loading')
-  h2 Analyzing Data...
-  img(src='assets/images/loading.gif')
-  h2 Analyzing Data...
+.container-fluid
 
-h4 Last updated {{last_updated | date:'MM-dd-yyyy HH:mm:ss Z'}}
-.btn.btn-primary#fetch(ng-click="fetchData()") Fetch New Data
+  .loader(ng-if='loading')
+    h2 Analyzing Data...
+    img(src='assets/images/loading.gif')
+    h2 Analyzing Data...
 
-h2 Total Users: {{totalUsers}}
-h3 API Calls: {{apiCalls}}
+  h4 Last updated {{last_updated | date:'MM-dd-yyyy HH:mm:ss Z'}}
+  .btn.btn-primary#fetch(ng-click="fetchData()") Fetch New Data
 
-table
-  tr
-    th Cohort
-    th Total
-    th Applied
-    th Accepted
-    th Enrolled
-    th Graduated
-    th Job
-    th Residents
-  tr(ng-repeat='cohortTag in cohortTags')
-    td {{cohortTag.display_name}}
-    td {{cohortTag.total_count}}
-    td {{cohortTag.appliedCount}}
-    td {{cohortTag.acceptedCount}}
-    td {{cohortTag.enrolledCount}}
-    td {{cohortTag.graduatedCount}}
-    td {{cohortTag.jobCount}}
-    td {{cohortTag.residentCount}}
+  h2 Total Users: {{totalUsers}}
+  h3 API Calls: {{apiCalls}}
 
-br
-br
-
-table
-  thead
+  table
     tr
-      th Stage
-      th Current #
-      th Overall #
-      th Stage Conversion Rate
-      th Overall Conversion Rate
-  tr(ng-repeat='stageTag in stageTags')
-    td {{stageTag.name}}
-    td {{stageTag.total_count}}
-    td {{stageTag.overall_count}}
-    td(ng-if="stageTag.stageConversionRate") {{stageTag.stageConversionRate}}%
-    td(ng-if="stageTag.overallConversionRate") {{stageTag.overallConversionRate}}%
+      th Cohort
+      th Total
+      th Applied
+      th Accepted
+      th Enrolled
+      th Graduated
+      th Job
+      th Residents
+    tr(ng-repeat='cohortTag in cohortTags')
+      td {{cohortTag.display_name}}
+      td {{cohortTag.total_count}}
+      td {{cohortTag.appliedCount}}
+      td {{cohortTag.acceptedCount}}
+      td {{cohortTag.enrolledCount}}
+      td {{cohortTag.graduatedCount}}
+      td {{cohortTag.jobCount}}
+      td {{cohortTag.residentCount}}
 
-h3 All Tags
-table.table-striped
-  tr(ng-repeat='tag in tags')
-    td {{tag.name}}
-    td {{tag.total_count}}
+  br
+  br
+
+  table
+    thead
+      tr
+        th Stage
+        th Current #
+        th Overall #
+        th Stage Conversion Rate
+        th Overall Conversion Rate
+    tr(ng-repeat='stageTag in stageTags')
+      td {{stageTag.name}}
+      td {{stageTag.total_count}}
+      td {{stageTag.overall_count}}
+      td(ng-if="stageTag.stageConversionRate") {{stageTag.stageConversionRate}}%
+      td(ng-if="stageTag.overallConversionRate") {{stageTag.overallConversionRate}}%
+
+  h3 All Tags
+  table.table-striped
+    tr(ng-repeat='tag in tags')
+      td {{tag.name}}
+      td {{tag.total_count}}
