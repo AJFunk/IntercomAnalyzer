@@ -496,6 +496,7 @@ module.exports = function (grunt) {
     sass: {
       server: {
         options: {
+          bundleExec: true,
           loadPath: [
             '<%= yeoman.client %>/bower_components',
             '<%= yeoman.client %>/app',
